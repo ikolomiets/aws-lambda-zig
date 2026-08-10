@@ -54,6 +54,7 @@ fn addDemos(b: *std.Build, zon_mod: *std.Build.Module) void {
     addDemo(b, target, optimize, "stream", "demo/stream.zig", lib);
     addDemo(b, target, optimize, "url_buffer", "demo/url_buffer.zig", lib);
     addDemo(b, target, optimize, "url_stream", "demo/url_stream.zig", lib);
+    addDemo(b, target, optimize, "sqs", "demo/sqs.zig", lib);
 }
 
 fn addDemo(
