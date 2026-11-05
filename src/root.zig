@@ -10,6 +10,7 @@ pub const handleStream = hdl.handleStreaming;
 
 // Events
 pub const url = @import("event/url.zig");
+pub const sqs = @import("event/sqs.zig");
 
 // Utils
 pub const KeyVal = @import("utils/KeyVal.zig");
@@ -27,6 +28,7 @@ test {
     _ = @import("runtime/handle.zig");
 
     _ = @import("event/url.zig");
+    _ = @import("event/sqs.zig");
 
     _ = @import("debug/Tester.zig");
     _ = @import("debug/runtime_test.zig");

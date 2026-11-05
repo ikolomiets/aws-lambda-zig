@@ -47,7 +47,7 @@ _Feel free to open an issue for additional integrations, or better yet, open a p
 - [x] Lambda URLs
 - [ ] API Gateway
 - [ ] S3
-- [ ] SQS
+- [x] SQS
 - [ ] SNS
 - [ ] DynamoDB
 - [ ] Data Firehose
@@ -389,6 +389,67 @@ ctx.forceTerminateAfterResponse();
 > Use with caution! Only use this method when you assume the function won’t behave
 > as expected in the following invocation.
 
+### SQS Events
+The `lambda.sqs` adapter parses Amazon SQS event batches and encodes partial
+batch failure responses.
+
+Configure the event source mapping with `ReportBatchItemFailures` when you want
+successfully processed messages to be deleted while failed messages are retried.
+
+#### Standard queues
+
+For a standard queue, continue processing the batch after a failure and report
+every message whose processor either returns `false` or returns an error:
+
+```zig
+fn handler(ctx: lambda.Context, payload: []const u8) ![]const u8 {
+    const event = try lambda.sqs.parseEvent(ctx.arena, payload);
+
+    var failures: std.ArrayList(lambda.sqs.BatchItemFailure) = .empty;
+    for (event.records) |record| {
+        const succeeded = processMessage(record) catch false;
+        if (succeeded) continue;
+
+        try failures.append(ctx.arena, .{
+            .item_identifier = record.message_id,
+        });
+    }
+
+    return lambda.sqs.encodeResponse(ctx.arena, .{
+        .batch_item_failures = failures.items,
+    });
+}
+```
+
+#### FIFO queues
+
+For a FIFO queue, stop at the first failure and report that message together
+with every remaining, unprocessed message. This preserves message ordering as
+[AWS requires](https://docs.aws.amazon.com/lambda/latest/dg/services-sqs-errorhandling.html):
+
+```zig
+fn handler(ctx: lambda.Context, payload: []const u8) ![]const u8 {
+    const event = try lambda.sqs.parseEvent(ctx.arena, payload);
+
+    var failures: std.ArrayList(lambda.sqs.BatchItemFailure) = .empty;
+    for (event.records, 0..) |record, index| {
+        const succeeded = processMessage(record) catch false;
+        if (succeeded) continue;
+
+        for (event.records[index..]) |unprocessed| {
+            try failures.append(ctx.arena, .{
+                .item_identifier = unprocessed.message_id,
+            });
+        }
+        break;
+    }
+
+    return lambda.sqs.encodeResponse(ctx.arena, .{
+        .batch_item_failures = failures.items,
+    });
+}
+```
+
 ### Response Streaming
 The runtime supports streaming responses to the client; though implementing a streaming handler differs from the standard handler.
 
@@ -510,6 +571,13 @@ zig build demo:url_buffer --release -Darch=ARCH_OPTION
 Uses Lambda URLs response streaming to serve dynamic updates:
 ```console
 zig build demo:url_stream --release -Darch=ARCH_OPTION
+```
+
+### SQS (standard queue)
+Processes standard-queue SQS records and reports message bodies equal to `fail`
+as partial batch failures:
+```console
+zig build demo:sqs --release -Darch=ARCH_OPTION
 ```
 
 ## License
