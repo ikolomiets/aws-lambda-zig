@@ -34,7 +34,7 @@ pub fn build(b: *std.Build) void {
 fn addUnitTests(b: *std.Build, zon_mod: *std.Build.Module) void {
     const target = b.standardTargetOptions(.{});
 
-    const lib = b.addModule("lambda", .{
+    const lib = b.createModule(.{
         .root_source_file = b.path("src/root.zig"),
         .target = target,
         .imports = &.{

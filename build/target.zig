@@ -38,6 +38,7 @@ const x86_target: Target.Query = blk: {
     break :blk .{
         .os_tag = .linux,
         .cpu_arch = .x86_64,
+        .abi = .gnu,
         .cpu_features_add = Target.x86.featureSet(&.{.avx2}),
         .glibc_version = glibc_version,
     };
@@ -48,6 +49,7 @@ const arm_target: Target.Query = blk: {
     break :blk .{
         .os_tag = .linux,
         .cpu_arch = .aarch64,
+        .abi = .gnu,
         .cpu_model = .{ .explicit = &Target.aarch64.cpu.neoverse_n1 },
         .cpu_features_add = Target.aarch64.featureSet(&.{.crypto}),
         .glibc_version = glibc_version,

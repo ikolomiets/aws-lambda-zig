@@ -301,7 +301,7 @@ const Status = enum(u9) {
     _,
 
     pub fn from(http: std.http.Status) Status {
-        return @enumFromInt(@intFromEnum(http));
+        return @fromBackingInt(@intCast(@backingInt(http)));
     }
 };
 

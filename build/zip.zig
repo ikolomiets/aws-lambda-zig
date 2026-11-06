@@ -61,7 +61,7 @@ pub fn writeArchive(gpa: Allocator, out: *Writer, entry: Entry) Error!void {
     const data = if (packed_smaller) deflated.written() else entry.content;
     const data_len: u32 = @intCast(data.len);
 
-    const crc = std.hash.crc.Crc32.hash(entry.content);
+    const crc = std.hash.crc.@"CRC-32/ISO-HDLC".hash(entry.content);
     const attributes = @as(u32, entry.mode) << 16;
 
     try out.writeStruct(zip.LocalFileHeader{

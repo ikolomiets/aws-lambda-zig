@@ -1,5 +1,5 @@
 # AWS Lambda Runtime for Zig
-![Zig v0.16](https://img.shields.io/badge/Zig-v0.16-black?logo=zig&logoColor=F7A41D "Zig v0.16")
+![Zig v0.17.0](https://img.shields.io/badge/Zig-v0.17.0-black?logo=zig&logoColor=F7A41D "Zig v0.17.0")
 [![MIT License](https://img.shields.io/github/license/by-nir/aws-lambda-zig)](/LICENSE)
 
 Write _AWS Lambda_ functions in Zig for blazing-fast invocations and cold starts.
@@ -53,6 +53,9 @@ _Feel free to open an issue for additional integrations, or better yet, open a p
 - [ ] Data Firehose
 
 ## Quick Start
+
+Requires Zig **0.17.0** or newer.
+
 1. Add a dependency to your project (replace `VERSION` with the desired version tag):
     ```console
     zig fetch --save git+https://github.com/by-nir/aws-lambda-zig#VERSION
